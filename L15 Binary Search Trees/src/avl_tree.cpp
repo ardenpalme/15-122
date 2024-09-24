@@ -257,7 +257,7 @@ tree_entry_t avl_tree_lookup(tree_t *tree, tree_entry_t entry)
 
 void avl_tree_print(tree_t *tree, int depth, int thrsh)
 {
-    if(depth == thrsh) return;
+    if(depth >= thrsh) return;
     beer_t *tmp = (beer_t*)tree->data;
 
     for(int i=0; i<depth; i++) std::cout<< "|"; 

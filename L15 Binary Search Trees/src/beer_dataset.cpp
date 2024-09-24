@@ -7,9 +7,6 @@
 #include <string_view>
 #include <cstdint>
 
-#define MAX_ENTRIES 100000
-#define DEBUG
-
 #include <lazycsv.hpp>
 #include <avl_tree.hpp>
 
@@ -26,7 +23,6 @@ uint64_t atouint64(const std::string& str) {
     }
     return result;
 }
-
 
 int main(int argc, char **argv)
 {
@@ -52,7 +48,10 @@ int main(int argc, char **argv)
         num_entries++;
     }
 
+#ifdef DEBUG
     avl_tree_print(beer_database,0,10);
+#endif
+
     std::cout << "Read in the beer database " << num_entries << " entries" << std::endl;
     
     std::string user_input;
