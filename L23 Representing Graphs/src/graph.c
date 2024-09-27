@@ -1,14 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "graph.h"
 
 graph_t *graph_new(unsigned int num_vert)
 //@ensures \result != NULL
 {
     graph_t *graph = (graph_t *)calloc(1,sizeof(graph_t));
-    graph->graph = (adj_list_t *)calloc(num_vert, sizeof(adj_list_t*));
+    graph->graph = (adj_list_t **)calloc(num_vert, sizeof(adj_list_t*));
     graph->size = num_vert;
+    return graph;
 }
 
 void graph_free(graph_t *graph)
@@ -49,7 +51,7 @@ bool graph_hasedge(graph_t *graph, vertex_t v, vertex_t w)
     }
 
     bool v_in_w = false;
-    adj_list_t *node = graph->graph[w];
+    node = graph->graph[w];
     while(node != NULL)
     {
         if(node->vertex == v){
@@ -84,47 +86,41 @@ void graph_addedge(graph_t *graph, vertex_t v, vertex_t w)
     node->next = search_node;
 }
 
-neighbor_t *graph_get_neighbors(graph_t *graph, vertex_t v)
+node_t *graph_get_neighbors(graph_t *graph, vertex_t v)
 //@requires graph != NULL && v < graph_size(graph)
 //@ensures \result != NULL
 {
-    return (neighbor_t*)graph->graph[v];
+    return (node_t*)graph->graph[v];
 }
 
-bool graph_hasmore_neighbors(neighbor_t *nbor)
+bool graph_hasmore_neighbors(node_t *nbor)
 //@requires node != NULL
 {
     adj_list_t *node = (adj_list_t*)nbor;
     return (node->next != NULL);
 }
 
-neighbor_t *graph_next_neighbor(neighbor_t *nbor)
+node_t *graph_next_neighbor(node_t *nbor)
 //@requires node != NULL
 //@requires graph_hasmore_neighbors(node)
 {
     adj_list_t *node = (adj_list_t *)nbor;
-    return (neighbor_t*)node->next;
+    return (node_t*)node->next;
 }
 
 void graph_print(graph_t *graph)
 {
-    neighbor_t *nbor;
+    node_t *node;
     uint32_t graph_sz = graph_size(graph);
-    for(int v=0; v < graph_sz; v++)
+    for(int i=0; i < graph_sz; i++)
     {
-        printf("[%d]",v);
+        printf("[%d]: ",i);
 
-        nbor = graph_get_neighbors(graph, v);
-        if(nbor != NULL){
-            printf(": ");
-        }else{
-            printf(" ");
-        }
-
-        while(graph_hasmore_neighbors(nbor)){
-            printf("(%d) ", nbor->vertex);
-            if(graph_hasmore_neighbors(nbor)) printf("-> ");
-            nbor = graph_next_neighbor(nbor);
+        node = graph->graph[i];
+        while(node != NULL ){
+            printf("(%d) ", node->vertex);
+            if(node->next != NULL) printf("-> ");
+            node = node->next;
         }
         printf("\n");
     }
