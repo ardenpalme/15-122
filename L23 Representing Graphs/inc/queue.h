@@ -11,6 +11,7 @@ typedef struct _ele_t {
 } ele_t;
 
 typedef bool (*cmp_func_t) (const void *ele1, const void *ele2);
+typedef void (*print_func_t) (const void *data);
 
 typedef struct _queue_t {
     ele_t *head;
@@ -25,6 +26,9 @@ void enqueue(queue_t *queue, void *data);
 bool queue_lookup(queue_t *queue, void *data, cmp_func_t cmp_func);
 
 void *dequeue(queue_t *queue);
+//@requires queue != NULL 
+
+void print_queue(queue_t *queue, print_func_t print_func);
 //@requires queue != NULL 
 
 #endif /* __QUEUE_H__ */
