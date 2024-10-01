@@ -64,7 +64,7 @@ bool graph_hasedge(graph_t *graph, vertex_t v, vertex_t w)
     return v_in_w && w_in_v;
 }
 
-void graph_addedge(graph_t *graph, vertex_t v, vertex_t w)
+void graph_addedge(graph_t *graph, vertex_t v, vertex_t w, uint32_t weight)
 //@requires G != NULL
 //@requires v < graph_size(G) && w < graph_size(graph)
 //@requires v != w && !graph_hasedge(G, v, w)
@@ -72,6 +72,7 @@ void graph_addedge(graph_t *graph, vertex_t v, vertex_t w)
     // add node to v's adjacency list
     adj_list_t *node = (adj_list_t *) malloc(sizeof(adj_list_t));
     node->vertex = w;
+    node->weight = weight;
 
     adj_list_t *search_node = graph->graph[v];
     graph->graph[v] = node;
@@ -80,6 +81,7 @@ void graph_addedge(graph_t *graph, vertex_t v, vertex_t w)
     // add node to w's adjacency list
     node = (adj_list_t *) malloc(sizeof(adj_list_t));
     node->vertex = v;
+    node->weight = weight;
 
     search_node = graph->graph[w];
     graph->graph[w] = node;
@@ -118,7 +120,7 @@ void graph_print(graph_t *graph)
 
         node = graph->graph[i];
         while(node != NULL ){
-            printf("(%d) ", node->vertex);
+            printf("(%d):[%d] ", node->vertex, node->weight);
             if(node->next != NULL) printf("-> ");
             node = node->next;
         }

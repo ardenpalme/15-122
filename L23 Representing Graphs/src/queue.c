@@ -62,7 +62,7 @@ void print_queue(queue_t *queue, print_func_t print_func)
 //@requires print_func != NULL
 {
     ele_t *tmp = queue->head;
-    printf("[ ");
+    printf("[");
     while(tmp != NULL) {
         (*print_func)(tmp->data);
         if(tmp->next != NULL) printf(", ");
@@ -70,4 +70,11 @@ void print_queue(queue_t *queue, print_func_t print_func)
         tmp = tmp->next;
     }
     printf("]\n");
+}
+
+void *queue_peek(queue_t *queue)
+//@requires queue != NULL
+//@requires queue->size > 0
+{
+    return queue->head->data;
 }

@@ -31,4 +31,9 @@ void *dequeue(queue_t *queue);
 void print_queue(queue_t *queue, print_func_t print_func);
 //@requires queue != NULL 
 
+void *queue_peek(queue_t *queue);
+//@requires queue != NULL
+//@requires queue->size > 0
+
+
 #endif /* __QUEUE_H__ */

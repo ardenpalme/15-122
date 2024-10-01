@@ -7,6 +7,7 @@ typedef uint32_t vertex_t;
 
 typedef struct _adj_list_t {
     vertex_t vertex;
+    uint32_t weight;
     struct _adj_list_t *next;
 } adj_list_t;
 
@@ -30,7 +31,7 @@ bool graph_hasedge(graph_t *graph, vertex_t v, vertex_t w);
 //@requires graph != NULL
 //@requires v < graph_size(graph) && w < graph_size(graph)
 
-void graph_addedge(graph_t *graph, vertex_t v, vertex_t w);
+void graph_addedge(graph_t *graph, vertex_t v, vertex_t w, uint32_t weight);
 //@requires G != NULL
 //@requires v < graph_size(G) && w < graph_size(graph)
 //@requires v != w && !graph_hasedge(G, v, w)
@@ -47,5 +48,6 @@ node_t *graph_next_neighbor(node_t *node);
 //@requires graph_hasmore_neighbors(node)
 
 void graph_print(graph_t *graph);
+//@requires queue != NULL
 
 #endif /* __GRAPH_H__ */
