@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
     //graph_t *span_tree = spanning_tree(graph);
     //graph_print(span_tree);
 
-    bfs_edges(graph);
     */
 
     sort_edges(graph);

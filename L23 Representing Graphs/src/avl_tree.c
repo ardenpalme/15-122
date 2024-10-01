@@ -3,82 +3,7 @@
 #include <stdbool.h>
 
 #include "avl_tree.h"
-
-/* ===== CONDITIONS - BEGIN ====== */
-
-bool is_ordered(tree_t *tree, tree_entry_t lo, tree_entry_t hi) 
-{
-    if(tree == NULL) return true; // a NULL tree is a vaild empty tree
-    
-    int k = entry_key(tree->data);
-
-    /* Pool the recursive case conditions together so that the return value propagates
-     * from the leaf nodes */
-
-    /* check bounds for local key on with per-tree scope, 
-        this fundamental operation needs to take place */
-    return ((lo == NULL) || key_compare(entry_key(lo), k) < 0) && // localized node check operation
-           ((hi == NULL) || key_compare(k, entry_key(hi)) < 0) &&
-
-           // left and right trees can be NULL for base case to be reached
-           is_ordered(tree->left, lo, tree->data) && // graph traversal
-           is_ordered(tree->right, tree->data, hi);
-}
-
-/* Is the height set in the tree member field reflective of the actual tree topology */
-bool is_specified_height(tree_t *tree)
-{
-    if(tree == NULL) return true;
-
-    int left_height = 0;
-    int right_height = 0;
-    if(tree->left != NULL) left_height = tree->left->height;
-    if(tree->right != NULL) right_height = tree->right->height;
-
-    /* Add the localized check in the pooled recursive check so that the
-     * localized check is performed across all sub-graph visits */
-    return (tree->height == std::max(left_height, right_height) + 1) &&
-           is_specified_height(tree->right) &&
-           is_specified_height(tree->left);
-}
-
-/* NOTE: the is_func() checks are part of pre/post conditions, and should not have any themselves */
-bool is_balanced(tree_t *tree)
-{
-    /* We're going to be visiting NULL trees, even if we've already 
-     * accounted for their height computation */
-    if(tree == NULL) return true;
-
-    int left_height = 0;
-    int right_height = 0;
-    if(tree->left != NULL) left_height = tree->left->height;
-    if(tree->right != NULL) right_height = tree->right->height;
-
-    /* Consider the heights of the sub-trees are those proper too? 
-     * Requires recursive graph traversal */
-    return (abs(left_height - right_height) <= 1) &&
-            is_balanced(tree->left) &&
-            is_balanced(tree->right);
-}
-
-/* Performs data validation check across all nodes in tree */
-bool is_tree(tree_t *tree)
-{
-    if(tree == NULL) return true;
-    return (tree->data != NULL) && // localized node check
-           is_tree(tree->right) && // graph traversal
-           is_tree(tree->left);
-}
-
-bool is_avl_tree(tree_t *tree)
-{
-    return is_tree(tree) && // data validation 
-           is_ordered(tree, NULL, NULL) && // key-ordering invariant
-           is_specified_height(tree) && // height validation 
-           is_balanced(tree);
-}
-
-/* ===== CONDITIONS - END ====== */
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 /* ===== HELPER FUNCTIONS - BEGIN ==== */
 
@@ -92,10 +17,9 @@ void fix_height(tree_t *tree)
 //@requires is_specified_height(tree->left)
 //@requires is_specified_height(tree->right)
 {
-    tree->height = std::max(tree_height(tree->left), tree_height(tree->right)) + 1;
+    tree->height = MAX(tree_height(tree->left), tree_height(tree->right)) + 1;
 }
 
-/* Go for the most specific pre and post conditions possible */
 tree_t *rotate_tree_left(tree_t *tree)
 //@requires (tree != NULL) && (tree->right != NULL)
 //@ensures is_specified_height(tree)
@@ -211,7 +135,9 @@ tree_entry_t avl_tree_lookup(tree_t *tree,
 {
     if(tree == NULL) return NULL;
 
-    int cmp = key_compare(entry_key(entry), entry_key(tree->data));
+    tree_key_t key1 = (*entry_key_func)(entry);
+    tree_key_t key2 = (*entry_key_func)(tree->data);
+    int cmp = (*key_cmp_func)(key1, key2);
     if(cmp == 0){
         return tree->data;
     }else if(cmp < 0){
