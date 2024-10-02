@@ -77,11 +77,17 @@ int main(int argc, char *argv[])
     min_heap_print(min_heap, print_func2);
 
     heap_rem_ele(min_heap);
-    min_heap_print(min_heap, print_func2);
-
+    heap_rem_ele(min_heap);
     heap_rem_ele(min_heap);
     min_heap_print(min_heap, print_func2);
 
+    heap_add_ele(min_heap, 10);
+    heap_add_ele(min_heap, 11);
+    heap_add_ele(min_heap, 12);
+    heap_add_ele(min_heap, 13);
+    min_heap_print(min_heap, print_func2);
+
+    heap_rem_ele(min_heap);
     heap_rem_ele(min_heap);
     min_heap_print(min_heap, print_func2);
 

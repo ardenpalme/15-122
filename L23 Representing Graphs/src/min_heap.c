@@ -327,6 +327,8 @@ heap_elem_t min_heap_rem(min_heap_t *min_heap,
         min_heap->num_elem=(int)pow(2,(min_heap->max_level));
     }
 
+    if(!is_heap(min_heap->root)) printf("min_heap invariant violated\n");
+
     return ret;
 }
 
