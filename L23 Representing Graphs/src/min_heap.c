@@ -7,6 +7,10 @@
 #include "min_heap.h"
 #include "queue.h"
 
+void print_func10(heap_elem_t elem) {
+    printf("%d", *(uint32_t*)elem);
+}
+
 /* ==== CONDITIONALS - BEGIN ==== */
 
 bool is_heap(heap_t *heap)
@@ -20,27 +24,41 @@ bool is_heap(heap_t *heap)
            is_heap(heap->left);
 }
 
+bool is_min_heap(heap_t *heap)
+{
+    (void)heap;
+    return true;
+}
+
 /* ==== CONDITIONALS - END ==== */
 
 /* ==== HELPERS - BEGIN ==== */
 
-bool print_heap(heap_t *heap)
+bool print_heap(heap_t *heap, print_elem_func_t print_func)
 {
     if(heap == NULL) return true;
 
-    printf("%d:[", *(int*)heap->data);
-    if(heap->left) printf("%d, ", *(int*)heap->left->data);
-    else           printf(",");
+    (*print_func)(heap->data); //printf("%d:[", *(int*)heap->data);
+    printf(": [");
 
-    if(heap->right) printf("%d, ", *(int*)heap->right->data);
-    else           printf(",");
+    if(heap->left){
+        (*print_func)(heap->left->data); //printf("%d, ", *(int*)heap->left->data);
+        printf(", ");
+    } else printf(",");
 
-    if(heap->parent) printf("%d", *(int*)heap->parent->data);
-    else           printf(" ");
+    if(heap->right){
+        (*print_func)(heap->right->data); //printf("%d, ", *(int*)heap->right->data);
+        printf(", ");
+    } else printf(",");
+
+    if(heap->parent){
+        (*print_func)(heap->parent->data); //printf("%d", *(int*)heap->parent->data);
+        printf(" ");
+    } else printf(" ");
     printf("] @ %d\n", heap->level);
 
-    return print_heap(heap->left) && 
-           print_heap(heap->right);
+    return print_heap(heap->left, print_func) && 
+           print_heap(heap->right, print_func);
 }
 
 heap_t *swap_up(heap_t *heap)
@@ -123,7 +141,7 @@ heap_t *get_next_rem_node(heap_t *heap, uint32_t max_level)
     heap_t *left_node, *right_node;
     if(heap == NULL) return NULL;
 
-    printf(">> max(%d) node: [%d]\n", max_level, *(int*)heap->data);
+    //printf(">> max(%d) node: [%d]\n", max_level, *(int*)heap->data);
 
     if(heap->level == max_level) {
        //@assert(heap->left == NULL && heap->right == NULL) 
@@ -170,6 +188,7 @@ heap_t *get_next_swap_node(heap_t *heap, priority_func_t priority_func)
                 return heap->left;
             }
         }
+        if(prior < prior_right && prior < prior_left) return NULL;
     }
 
     if((heap->right != NULL) &&
@@ -207,7 +226,7 @@ void min_heap_add(min_heap_t *min_heap,
     }
 
     if(min_heap->num_elem >= (int)pow(2,(min_heap->max_level))) {
-        printf("LVL %d\n", (int)pow(2,(min_heap->max_level)));
+        //printf("LVL %d\n", (int)pow(2,(min_heap->max_level)));
         min_heap->max_level++;
         min_heap->num_elem=0;
     }
@@ -236,7 +255,7 @@ void min_heap_add(min_heap_t *min_heap,
           ((*priority_func)(node->data) < (*priority_func)(node->parent->data))) 
     {
         //printf("===== BEGIN =======\n");
-        //print_heap(min_heap->root);
+        //print_heap(min_heap->root, print_func1);
         //printf("swap_up(%d)\n", *(int*)node->data);
 
         heap_t *parent = node->parent; 
@@ -253,28 +272,30 @@ void min_heap_add(min_heap_t *min_heap,
         }
         min_heap->root = tmp;
 
-        if(!is_heap(min_heap->root)) printf("min_heap invariant violated\n");
+    if(!is_heap(min_heap->root)) fprintf(stderr, "min_heap invariant violated\n");
 
         //print_heap(min_heap->root);
         //printf("====== END ========\n");
     }
 
-    if(!is_heap(min_heap->root)) {
-        printf("min_heap invariant violated\n");
-        print_heap(min_heap->root);
-    }
+    if(!is_heap(min_heap->root)) fprintf(stderr, "min_heap invariant violated\n");
 
     min_heap->num_elem++;
 }
-
 
 heap_elem_t min_heap_rem(min_heap_t *min_heap, 
                          priority_func_t priority_func)
 //@requires heap != NULL && !heap_empty(heap)
 {
+    if(min_heap->root->right == NULL && 
+       min_heap->root->left == NULL) {
+        heap_elem_t ret= min_heap->root->data;
+        min_heap->root = NULL;
+        return ret;
+    }
 
     heap_t *node = get_next_rem_node(min_heap->root, min_heap->max_level);
-    printf("Removing node [%d]\n", *(int*)node->data);
+    //printf("Removing node [%u]\n", *(uint32_t*)node->data);
 
     if(node != NULL) {
         if(node->parent->left == node) {
@@ -302,9 +323,13 @@ heap_elem_t min_heap_rem(min_heap_t *min_heap,
     heap_t *swap_node;
     while((swap_node=get_next_swap_node(node, priority_func)) != NULL)
     {
-        printf("===== BEGIN (REM) =======\n");
-        print_heap(min_heap->root);
-        printf("swap_up(%d)\n", *(int*)swap_node->data);
+        //printf("===== BEGIN (REM) =======\n");
+        //print_heap(min_heap->root);
+        //printf("swap_up(%d)\n", *(uint32_t*)swap_node->data);
+
+        //print_heap(min_heap->root, print_func10);
+        //printf("node: %d\n", *(uint32_t*)node->data);
+        //printf("swap_node: %d\n", *(uint32_t*)swap_node->data);
 
         (void)swap_up(swap_node);
 
@@ -314,10 +339,10 @@ heap_elem_t min_heap_rem(min_heap_t *min_heap,
         }
         min_heap->root = tmp;
 
-        if(!is_heap(min_heap->root)) printf("min_heap invariant violated\n");
+        if(!is_heap(min_heap->root)) fprintf(stderr, "min_heap invariant violated\n");
 
-        print_heap(min_heap->root);
-        printf("====== END (REM) ========\n");
+        //print_heap(min_heap->root);
+        //printf("====== END (REM) ========\n");
 
     }
 
@@ -327,18 +352,18 @@ heap_elem_t min_heap_rem(min_heap_t *min_heap,
         min_heap->num_elem=(int)pow(2,(min_heap->max_level));
     }
 
-    if(!is_heap(min_heap->root)) printf("min_heap invariant violated\n");
+    if(!is_heap(min_heap->root)) fprintf(stderr, "min_heap invariant violated\n");
 
     return ret;
 }
 
 void min_heap_print(min_heap_t *min_heap, 
-                    print_elem_func_t print_func)
+                    print_elem_func_t  print_func)
 //@requires min_heap != NULL 
 {
     printf("==== Min Heap ====\n");
     printf("max level: %.2d\n", min_heap->max_level);
     printf("num elem: %.2llu\n", min_heap->num_elem);
 
-    print_heap(min_heap->root);
+    print_heap(min_heap->root, print_func);
 }

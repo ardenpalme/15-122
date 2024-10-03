@@ -7,8 +7,7 @@
 #include "kruskal.h"
 #include "min_heap.h"
 
-void print_func1(const void *data)
-{
+void print_func1(const void *data) {
     node_t *node = (node_t *)data;
     printf("%d", node->vertex);
 }
@@ -30,24 +29,32 @@ void heap_add_ele(min_heap_t *min_heap, uint32_t val) {
 }
 
 void heap_rem_ele(min_heap_t *min_heap) {
-    heap_elem_t ret = min_heap_rem(min_heap, priority_func2);
-    printf("ret -> [%d]\n", *(int*)ret);
+    heap_elem_t elem = min_heap_rem(min_heap, priority_func2);
+    //printf("ret -> [%d]\n", *(int*)ret);
+
+    graph_edge_t *edge = (graph_edge_t  *)elem;
+    printf("ret -> (%d, %d, %d)\n", edge->u, edge->v, edge->weight);
+}
+
+void edge_print_func(heap_elem_t elem) {
+    graph_edge_t *edge = (graph_edge_t  *)elem;
+    printf("%d", edge->weight);
 }
 
 int main(int argc, char *argv[])
 {
-    /*
     graph_t *graph = graph_new(5);
-    graph_addedge(graph,0,1,3); // A - B
-    graph_addedge(graph,0,4,2); // A - E
-    graph_addedge(graph,1,4,2); // B - E
-    graph_addedge(graph,1,2,3); // B - C
-    graph_addedge(graph,4,2,2); // E - C
-    graph_addedge(graph,2,3,3); // D - C
+    graph_addedge(graph,0,1,9); // A - B
+    graph_addedge(graph,0,4,1); // A - E
+    graph_addedge(graph,1,4,1); // B - E
+    graph_addedge(graph,1,2,4); // B - C
+    graph_addedge(graph,4,2,15); // E - C
+    graph_addedge(graph,2,3,11); // D - C
 
     graph_print(graph);
     printf("\n\n");
 
+    /*
     bool *mark = calloc(5, sizeof(bool));
     queue_t *path = bfs_search(graph, mark, 0, 2);
     print_queue(path,print_func1);
@@ -61,6 +68,7 @@ int main(int argc, char *argv[])
     sort_edges(graph);
     */
 
+    /*
     min_heap_t *min_heap = (min_heap_t*)calloc(1,sizeof(min_heap_t));
     heap_add_ele(min_heap, 2);
     heap_add_ele(min_heap, 3);
@@ -90,6 +98,20 @@ int main(int argc, char *argv[])
     heap_rem_ele(min_heap);
     heap_rem_ele(min_heap);
     min_heap_print(min_heap, print_func2);
+    */
 
+    min_heap_t *min_heap = (min_heap_t*)calloc(1,sizeof(min_heap_t));
+    bool **mark = malloc(graph->size * sizeof(bool *));
+    for (int i = 0; i < graph->size; ++i) {
+        mark[i] = malloc(graph->size * sizeof(bool));
+    }
+
+    sort_edges(graph, mark, min_heap);
+    while(min_heap->root) {
+        heap_rem_ele(min_heap);
+        //min_heap_print(min_heap, edge_print_func);
+        //printf("\n");
+    }
+    
     return 0;
 }

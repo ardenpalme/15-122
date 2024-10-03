@@ -6,7 +6,7 @@
 #include <time.h>
 #include <assert.h>
 
-#include "graph_search.h"
+#include "kruskal.h"
 
 void print_queue_func(const void *data) 
 //@requires queue != NULL 
@@ -63,21 +63,42 @@ graph_t *spanning_tree(graph_t *graph)
     return span_tree;
 }
 
-typedef struct _graph_edges_t {
-    vertex_t u;
-    vertex_t v;
-    uint32_t weight;
-} graph_edges_t;
+static priority_t priority_func(heap_elem_t elem)
+{
+    graph_edge_t *edge = (graph_edge_t*)elem;
+    return edge->weight;
+}
 
-void sort_edges(graph_t *graph)
+static void print_func(heap_elem_t elem) {
+    graph_edge_t *edge = (graph_edge_t  *)elem;
+    printf("%d", edge->weight);
+}
+
+void sort_edges(graph_t *graph, bool **mark, min_heap_t *min_heap)
 {
     node_t *node;
     uint32_t graph_sz = graph_size(graph);
+    graph_edge_t *edge;
+
     for(int i=0; i < graph_sz; i++)
     {
         node = graph->graph[i];
         while(node != NULL ){
-            printf("(%d,%d): %d\n", i, node->vertex, node->weight);
+            if(!mark[i][node->vertex])
+            {
+                printf("adding (%d,%d,%d)\n", i, node->vertex, node->weight);
+                
+                edge = (graph_edge_t*)malloc(sizeof(graph_edge_t));
+                edge->u = i;
+                edge->v = node->vertex;
+                edge->weight = node->weight;
+
+                min_heap_add(min_heap, (void*)edge, priority_func);
+                //min_heap_print(min_heap, print_func);
+
+                mark[i][node->vertex] = true;
+                mark[node->vertex][i] = true;
+            }
             node = node->next;
         }
     }
