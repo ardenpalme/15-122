@@ -44,15 +44,18 @@ void edge_print_func(heap_elem_t elem) {
 int main(int argc, char *argv[])
 {
     graph_t *graph = graph_new(5);
-    graph_addedge(graph,0,1,9); // A - B
-    graph_addedge(graph,0,4,1); // A - E
-    graph_addedge(graph,1,4,1); // B - E
-    graph_addedge(graph,1,2,4); // B - C
-    graph_addedge(graph,4,2,15); // E - C
-    graph_addedge(graph,2,3,11); // D - C
+    graph_addedge(graph,0,1,3); // A - B
+    graph_addedge(graph,0,4,2); // A - E
+    graph_addedge(graph,1,4,2); // B - E
+    graph_addedge(graph,1,2,3); // B - C
+    graph_addedge(graph,4,2,2); // E - C
+    graph_addedge(graph,2,3,3); // D - C
 
     graph_print(graph);
     printf("\n\n");
+
+    bool *mark = calloc(5, sizeof(bool));
+    graph_has_cycle(graph, mark, (graph->size + 1), 0);
 
     /*
     bool *mark = calloc(5, sizeof(bool));
@@ -100,6 +103,7 @@ int main(int argc, char *argv[])
     min_heap_print(min_heap, print_func2);
     */
 
+    /*
     min_heap_t *min_heap = (min_heap_t*)calloc(1,sizeof(min_heap_t));
     bool **mark = malloc(graph->size * sizeof(bool *));
     for (int i = 0; i < graph->size; ++i) {
@@ -112,6 +116,7 @@ int main(int argc, char *argv[])
         //min_heap_print(min_heap, edge_print_func);
         //printf("\n");
     }
+    */
     
     return 0;
 }

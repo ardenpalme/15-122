@@ -50,4 +50,6 @@ node_t *graph_next_neighbor(node_t *node);
 void graph_print(graph_t *graph);
 //@requires queue != NULL
 
+bool graph_has_cycle(graph_t *graph, bool *mark, vertex_t last_vert, vertex_t vert);
+
 #endif /* __GRAPH_H__ */

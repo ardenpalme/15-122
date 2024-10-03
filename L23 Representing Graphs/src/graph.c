@@ -127,3 +127,26 @@ void graph_print(graph_t *graph)
         printf("\n");
     }
 }
+
+bool graph_has_cycle(graph_t *graph, bool *mark, vertex_t last_vert, vertex_t vert) 
+{
+    //printf("vert: %d, last_vert: %d\n", vert, last_vert);
+    mark[vert] = true;
+
+    node_t *res;
+    node_t *node = graph->graph[vert];
+    while(node != NULL) {
+        if(!mark[node->vertex]) {
+            if(graph_has_cycle(graph, mark, vert, node->vertex)) return true;
+        }else{
+            if(node->vertex != last_vert) {
+                //printf("cycle detected! node: %d seen before!\n", node->vertex);
+                return true;
+            }
+        }
+        node = node->next;
+    }
+
+    if(node == NULL) return false; 
+    return false;
+}
