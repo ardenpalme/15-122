@@ -52,4 +52,8 @@ void graph_print(graph_t *graph);
 
 bool graph_has_cycle(graph_t *graph, bool *mark, vertex_t last_vert, vertex_t vert);
 
+bool graph_empty(graph_t *graph);
+
+void graph_remove_edge(graph_t *graph, vertex_t v, vertex_t w);
+
 #endif /* __GRAPH_H__ */

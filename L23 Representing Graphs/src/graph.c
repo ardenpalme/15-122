@@ -88,6 +88,44 @@ void graph_addedge(graph_t *graph, vertex_t v, vertex_t w, uint32_t weight)
     node->next = search_node;
 }
 
+void graph_remove_edge(graph_t *graph, vertex_t v, vertex_t w)
+{
+    node_t *search_node = graph->graph[v];
+    node_t *node, *prev_node;
+
+    node = graph->graph[v];
+    prev_node = NULL;
+    while(node != NULL) {
+        if(node->vertex == w) {
+            if(prev_node == NULL) {
+                graph->graph[v] = node->next;
+            }else{
+                prev_node->next = node->next;
+            }
+            node->next = NULL;
+            //free(node)
+        }
+        prev_node = node;
+        node = node->next;
+    }
+
+    node = graph->graph[w];
+    prev_node = NULL;
+    while(node != NULL) {
+        if(node->vertex == v) {
+            if(prev_node == NULL) {
+                graph->graph[w] = node->next;
+            }else{
+                prev_node->next = node->next;
+            }
+            node->next = NULL;
+            //free(node)
+        }
+        prev_node = node;
+        node = node->next;
+    }
+}
+
 node_t *graph_get_neighbors(graph_t *graph, vertex_t v)
 //@requires graph != NULL && v < graph_size(graph)
 //@ensures \result != NULL
@@ -130,7 +168,7 @@ void graph_print(graph_t *graph)
 
 bool graph_has_cycle(graph_t *graph, bool *mark, vertex_t last_vert, vertex_t vert) 
 {
-    //printf("vert: %d, last_vert: %d\n", vert, last_vert);
+    printf("vert: %d, last_vert: %d\n", vert, last_vert);
     mark[vert] = true;
 
     node_t *res;
@@ -140,7 +178,7 @@ bool graph_has_cycle(graph_t *graph, bool *mark, vertex_t last_vert, vertex_t ve
             if(graph_has_cycle(graph, mark, vert, node->vertex)) return true;
         }else{
             if(node->vertex != last_vert) {
-                //printf("cycle detected! node: %d seen before!\n", node->vertex);
+                printf("cycle detected! node: %d seen before!\n", node->vertex);
                 return true;
             }
         }
@@ -149,4 +187,11 @@ bool graph_has_cycle(graph_t *graph, bool *mark, vertex_t last_vert, vertex_t ve
 
     if(node == NULL) return false; 
     return false;
+}
+
+bool graph_empty(graph_t *graph) {
+    for(int i=0; i<graph->size; i++) {
+        if(graph->graph[i] != NULL) return false;
+    }
+    return true;
 }

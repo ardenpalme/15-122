@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include "kruskal.h"
+#define INV_VERTEX 10000
 
 void print_queue_func(const void *data) 
 //@requires queue != NULL 
@@ -86,7 +87,7 @@ void sort_edges(graph_t *graph, bool **mark, min_heap_t *min_heap)
         while(node != NULL ){
             if(!mark[i][node->vertex])
             {
-                printf("adding (%d,%d,%d)\n", i, node->vertex, node->weight);
+                //printf("adding (%d,%d,%d)\n", i, node->vertex, node->weight);
                 
                 edge = (graph_edge_t*)malloc(sizeof(graph_edge_t));
                 edge->u = i;
@@ -102,4 +103,47 @@ void sort_edges(graph_t *graph, bool **mark, min_heap_t *min_heap)
             node = node->next;
         }
     }
+}
+
+graph_t *min_span_tree(graph_t *graph)
+{
+
+    graph_t *span_tree;
+    heap_elem_t elem;
+    graph_edge_t *edge;
+
+    min_heap_t *min_heap = (min_heap_t*)calloc(1,sizeof(min_heap_t));
+    bool **mark2d = malloc(graph->size * sizeof(bool *));
+    for (int i = 0; i < graph->size; ++i) {
+        mark2d[i] = malloc(graph->size * sizeof(bool));
+    }
+
+    bool *mark = calloc(graph->size, sizeof(bool));
+    span_tree = graph_new(graph->size);
+
+    sort_edges(graph, mark2d, min_heap);
+    vertex_t span_tree_root = INV_VERTEX;
+
+    while(min_heap->root) {
+        elem = min_heap_rem(min_heap, priority_func);
+        edge = (graph_edge_t*)elem;
+        printf("considering (%d, %d, %d)\n", edge->u, edge->v, edge->weight);
+
+        graph_addedge(span_tree, edge->u, edge->v, edge->weight);
+
+        if(span_tree_root == INV_VERTEX) {
+            span_tree_root = edge->u;
+        }else{
+            //@assert(span_tree_root != INV_VERTEX)
+            memset(mark, 0, graph->size);
+            printf("checking cycle: %d\n",span_tree_root);
+            if(graph_has_cycle(span_tree, mark, INV_VERTEX, span_tree_root)){
+                graph_remove_edge(span_tree, edge->u, edge->v);
+            }
+        }
+        //min_heap_print(min_heap, edge_print_func);
+        //printf("\n");
+    }
+
+    return span_tree;
 }

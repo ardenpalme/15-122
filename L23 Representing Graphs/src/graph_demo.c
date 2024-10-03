@@ -54,9 +54,6 @@ int main(int argc, char *argv[])
     graph_print(graph);
     printf("\n\n");
 
-    bool *mark = calloc(5, sizeof(bool));
-    graph_has_cycle(graph, mark, (graph->size + 1), 0);
-
     /*
     bool *mark = calloc(5, sizeof(bool));
     queue_t *path = bfs_search(graph, mark, 0, 2);
@@ -103,20 +100,9 @@ int main(int argc, char *argv[])
     min_heap_print(min_heap, print_func2);
     */
 
-    /*
-    min_heap_t *min_heap = (min_heap_t*)calloc(1,sizeof(min_heap_t));
-    bool **mark = malloc(graph->size * sizeof(bool *));
-    for (int i = 0; i < graph->size; ++i) {
-        mark[i] = malloc(graph->size * sizeof(bool));
-    }
 
-    sort_edges(graph, mark, min_heap);
-    while(min_heap->root) {
-        heap_rem_ele(min_heap);
-        //min_heap_print(min_heap, edge_print_func);
-        //printf("\n");
-    }
-    */
+    graph_t *span_tree = min_span_tree(graph);
+    graph_print(span_tree);
     
     return 0;
 }

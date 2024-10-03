@@ -14,4 +14,6 @@ graph_t *spanning_tree(graph_t *graph);
 
 void sort_edges(graph_t *graph, bool **mark, min_heap_t *min_heap);
 
+graph_t *min_span_tree(graph_t *graph);
+
 #endif /* __KRUSKAL_H__ */
